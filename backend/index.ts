@@ -4,6 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 import cors from "cors";
 import { DAILY_REPORT_SYSTEM_PROMPT } from "./prompt/dailyReportPrompt";
 import { HAIKU_PROMPT } from "./prompt/haikuPrompt";
+import { characterTransformPrompt } from "./prompt/characterPrompt";
 
 const app = express();
 const port = process.env.BACKEND_PORT;
@@ -28,9 +29,14 @@ app.get("/", (req, res) => {
 });
 
 app.post("/transform", async (req, res) => {
-  const { inputText } = req.body;
+  const { inputText, mode = "summary", characterName = "" } = req.body;
 
   try {
+    const promptText =
+      mode === "character"
+        ? characterTransformPrompt(characterName)
+        : DAILY_REPORT_SYSTEM_PROMPT;
+
     const summaryResponse = await gemini.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -39,7 +45,7 @@ app.post("/transform", async (req, res) => {
           parts: [
             {
               text:
-                DAILY_REPORT_SYSTEM_PROMPT +
+                promptText +
                 "\n\n---\n以下が日報の本文です。これを上記のルールに従って変換してください。\n\n" +
                 inputText,
             },
