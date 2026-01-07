@@ -9,6 +9,7 @@ export default function Home() {
 
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  const [haiku, setHaiku] = useState("");
   const [loading, setLoading] = useState(false);
 
   return (
@@ -40,6 +41,7 @@ export default function Home() {
               
               const data = await response.json();
               setOutput(data.output);
+              setHaiku(data.haiku);
             } catch (error) {
               console.error("Error:", error);
               setOutput(`エラーが発生しました: ${error}`);
@@ -50,10 +52,18 @@ export default function Home() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>トランスフォーム後</CardTitle>
+            <CardTitle>トランスフォーム後🤖</CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea className="min-h-48 bg-green-50" value={output} onChange={(e) => setOutput(e.target.value)} />
+          </CardContent>
+        </Card>
+        <Card className="my-4">
+          <CardHeader>
+            <CardTitle>本日の一句🐇</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea className="min-h-24 bg-green-100" value={haiku} onChange={(e) => setHaiku(e.target.value)} />
           </CardContent>
         </Card>
     </main>

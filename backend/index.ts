@@ -3,6 +3,7 @@ import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import cors from "cors";
 import { DAILY_REPORT_SYSTEM_PROMPT } from "./prompt/dailyReportPrompt";
+import { HAIKU_PROMPT } from "./prompt/haikuPrompt";
 
 const app = express();
 const port = process.env.BACKEND_PORT;
@@ -30,7 +31,7 @@ app.post("/transform", async (req, res) => {
   const { inputText } = req.body;
 
   try {
-    const response = await gemini.models.generateContent({
+    const summaryResponse = await gemini.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
         {
@@ -47,7 +48,24 @@ app.post("/transform", async (req, res) => {
       ],
     });
 
-    res.json({ output: response.text });
+    const haikuResponse = await gemini.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text:
+                HAIKU_PROMPT +
+                "\n\n---\n日報本文:\n\n" +
+                inputText,
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json({ output: summaryResponse.text, haiku: haikuResponse.text });
   } catch (error) {
     console.error("Error while transforming daily report:", error);
     res.status(500).json({ error: "Failed to transform daily report" });
