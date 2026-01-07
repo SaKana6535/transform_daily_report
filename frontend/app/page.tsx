@@ -23,19 +23,34 @@ export default function Home() {
         </Card>
         <div className="flex justify-center">
           <Button className="my-4 bg-blue-400 text-white" variant="outline" disabled={loading || !input} onClick={async () => {
-            setLoading(true);
-            const response = await fetch("http://localhost:3005/transform", {
-              method: "POST",
-              body: JSON.stringify({ text: input }),
-            });
-            const data = await response.json();
-            setOutput(data.output);
-            setLoading(false);
-          }}>{loading ? "ドキドキ..." : "変換するう！！"}</Button>
+            try {
+              setLoading(true);
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+              const response = await fetch(`${apiUrl}/transform`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ inputText: input }),
+              });
+              
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              
+              const data = await response.json();
+              setOutput(data.output);
+            } catch (error) {
+              console.error("Error:", error);
+              setOutput(`エラーが発生しました: ${error}`);
+            } finally {
+              setLoading(false);
+            }
+          }}>{loading ? "ドキドキ..." : "変換するう"}</Button>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>変換後！！</CardTitle>
+            <CardTitle>トランスフォーム後</CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea className="min-h-48 bg-green-50" value={output} onChange={(e) => setOutput(e.target.value)} />
