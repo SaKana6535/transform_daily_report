@@ -5,6 +5,7 @@ import cors from "cors";
 import { DAILY_REPORT_SYSTEM_PROMPT } from "./prompt/dailyReportPrompt";
 import { HAIKU_PROMPT } from "./prompt/haikuPrompt";
 import { characterTransformPrompt } from "./prompt/characterPrompt";
+import { REVIEW_PROMPT } from "./prompt/reviewPrompt";
 
 const app = express();
 const port = process.env.BACKEND_PORT || 3005;
@@ -32,10 +33,14 @@ app.post("/transform", async (req, res) => {
   const { inputText, mode = "summary", characterName = "" } = req.body;
 
   try {
-    const promptText =
-      mode === "summary"
-        ? DAILY_REPORT_SYSTEM_PROMPT
-        : characterTransformPrompt(characterName);
+    let promptText: string;
+    if (mode === "summary") {
+      promptText = DAILY_REPORT_SYSTEM_PROMPT;
+    } else if (mode === "review") {
+      promptText = REVIEW_PROMPT;
+    } else {
+      promptText = characterTransformPrompt(characterName);
+    }
 
     const response = await gemini.models.generateContent({
       model: "gemini-2.5-flash",

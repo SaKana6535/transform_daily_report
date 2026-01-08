@@ -11,8 +11,9 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [characterOutput, setCharacterOutput] = useState("");
   const [summaryOutput, setSummaryOutput] = useState("");
+  const [reviewOutput, setReviewOutput] = useState("");
   const [haiku, setHaiku] = useState("");
-  const [mode, setMode] = useState<"summary" | "character">("summary");
+  const [mode, setMode] = useState<"summary" | "character" | "review">("summary");
   const [character, setCharacter] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -31,11 +32,15 @@ export default function Home() {
             <RadioGroup
               className="flex items-center gap-4"
               value={mode}
-              onValueChange={(value) => setMode(value as "summary" | "character")}
+              onValueChange={(value) => setMode(value as "summary" | "character" | "review")}
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem id="mode-summary" value="summary" />
                 <label htmlFor="mode-summary">要約🤖</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem id="mode-review" value="review" />
+                <label htmlFor="mode-review">添削✏️</label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem id="mode-character" value="character" />
@@ -47,7 +52,7 @@ export default function Home() {
               <div className="flex-1 min-w-[200px]">
                 <input
                   className="w-full rounded border border-slate-500 px-3 py-2 text-sm"
-                  placeholder="キャラクター（例: クレヨンしんちゃん, 関西弁, 女の子など）"
+                  placeholder="キャラ(例:クレヨンしんちゃん, 関西弁など）"
                   value={character}
                   onChange={(e) => setCharacter(e.target.value)}
                 />
@@ -78,6 +83,8 @@ export default function Home() {
                 const data = await response.json();
                 if (mode === "summary") {
                   setSummaryOutput(data.output);
+                } else if (mode === "review") {
+                  setReviewOutput(data.output);
                 } else {
                   setCharacterOutput(data.output);
                 }
@@ -86,6 +93,8 @@ export default function Home() {
                 console.error("Error:", error);
                 if (mode === "summary") {
                   setSummaryOutput(`エラーが発生しました: ${error}`);
+                } else if (mode === "review") {
+                  setReviewOutput(`エラーが発生しました: ${error}`);
                 } else {
                   setCharacterOutput(`エラーが発生しました: ${error}`);
                 }
@@ -97,10 +106,34 @@ export default function Home() {
         </div>
         <Card>
           <CardHeader> 
-            {mode === "summary" ? <CardTitle>要約🤖</CardTitle> : <CardTitle>語尾変換🥸</CardTitle>}
+            {mode === "summary" ? (
+              <CardTitle>要約🤖</CardTitle>
+            ) : mode === "review" ? (
+              <CardTitle>添削✏️</CardTitle>
+            ) : (
+              <CardTitle>語尾変換🥸</CardTitle>
+            )}
           </CardHeader>
           <CardContent>
-            <Textarea className="min-h-48 bg-green-50" value={mode === "summary" ? summaryOutput : characterOutput} onChange={(e) => mode === "summary" ? setSummaryOutput(e.target.value) : setCharacterOutput(e.target.value)} />
+            <Textarea
+              className="min-h-48 bg-green-50"
+              value={
+                mode === "summary"
+                  ? summaryOutput
+                  : mode === "review"
+                  ? reviewOutput
+                  : characterOutput
+              }
+              onChange={(e) => {
+                if (mode === "summary") {
+                  setSummaryOutput(e.target.value);
+                } else if (mode === "review") {
+                  setReviewOutput(e.target.value);
+                } else {
+                  setCharacterOutput(e.target.value);
+                }
+              }}
+            />
           </CardContent>
         </Card>
         <Card className="my-4">
