@@ -7,8 +7,8 @@ import { HAIKU_PROMPT } from "./prompt/haikuPrompt";
 import { characterTransformPrompt } from "./prompt/characterPrompt";
 
 const app = express();
-const port = process.env.BACKEND_PORT;
-const frontendOrigin = process.env.FRONTEND_ORIGIN;
+const port = process.env.BACKEND_PORT || 3005;
+const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:3004";
 
 const gemini = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",

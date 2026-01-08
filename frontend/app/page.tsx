@@ -52,32 +52,37 @@ export default function Home() {
             </div>
           )}
 
-          <Button className="bg-blue-400 text-white" variant="outline" disabled={loading || !input || !character} onClick={async () => {
-            try {
-              setLoading(true);
-              const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-              const response = await fetch(`${apiUrl}/transform`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ inputText: input, mode, characterName: character }),
-              });
-              
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+          <Button 
+            className="bg-blue-400 text-white" 
+            variant="outline" 
+            disabled={loading || !input || (!character && mode==="character")} 
+            onClick={async () => {
+              try {
+                setLoading(true);
+                const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3005";
+                const response = await fetch(`${apiUrl}/transform`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ inputText: input, mode, characterName: character }),
+                });
+                
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                setOutput(data.output);
+                setHaiku(data.haiku);
+              } catch (error) {
+                console.error("Error:", error);
+                setOutput(`エラーが発生しました: ${error}`);
+              } finally {
+                setLoading(false);
               }
-              
-              const data = await response.json();
-              setOutput(data.output);
-              setHaiku(data.haiku);
-            } catch (error) {
-              console.error("Error:", error);
-              setOutput(`エラーが発生しました: ${error}`);
-            } finally {
-              setLoading(false);
-            }
-          }}>{loading ? "ドキドキ..." : "変換するう"}</Button>
+            }}>{loading ? "ドキドキ..." : "変換する"}
+          </Button>
         </div>
         <Card>
           <CardHeader> 
