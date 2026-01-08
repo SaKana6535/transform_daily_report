@@ -33,11 +33,11 @@ app.post("/transform", async (req, res) => {
 
   try {
     const promptText =
-      mode === "character"
-        ? characterTransformPrompt(characterName)
-        : DAILY_REPORT_SYSTEM_PROMPT;
+      mode === "summary"
+        ? DAILY_REPORT_SYSTEM_PROMPT
+        : characterTransformPrompt(characterName);
 
-    const summaryResponse = await gemini.models.generateContent({
+    const response = await gemini.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
         {
@@ -71,7 +71,7 @@ app.post("/transform", async (req, res) => {
       ],
     });
 
-    res.json({ output: summaryResponse.text, haiku: haikuResponse.text });
+    res.json({ output: response.text, haiku: haikuResponse.text });
   } catch (error) {
     console.error("Error while transforming daily report:", error);
     res.status(500).json({ error: "Failed to transform daily report" });

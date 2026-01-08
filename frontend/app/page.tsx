@@ -9,7 +9,8 @@ import { useState } from "react";
 export default function Home() {
 
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+  const [characterOutput, setCharacterOutput] = useState("");
+  const [summaryOutput, setSummaryOutput] = useState("");
   const [haiku, setHaiku] = useState("");
   const [mode, setMode] = useState<"summary" | "character">("summary");
   const [character, setCharacter] = useState("");
@@ -73,11 +74,19 @@ export default function Home() {
                 }
                 
                 const data = await response.json();
-                setOutput(data.output);
+                if (mode === "summary") {
+                  setSummaryOutput(data.output);
+                } else {
+                  setCharacterOutput(data.output);
+                }
                 setHaiku(data.haiku);
               } catch (error) {
                 console.error("Error:", error);
-                setOutput(`エラーが発生しました: ${error}`);
+                if (mode === "summary") {
+                  setSummaryOutput(`エラーが発生しました: ${error}`);
+                } else {
+                  setCharacterOutput(`エラーが発生しました: ${error}`);
+                }
               } finally {
                 setLoading(false);
               }
@@ -89,7 +98,7 @@ export default function Home() {
             {mode === "summary" ? <CardTitle>要約🤖</CardTitle> : <CardTitle>語尾変換🥸</CardTitle>}
           </CardHeader>
           <CardContent>
-            <Textarea className="min-h-48 bg-green-50" value={output} onChange={(e) => setOutput(e.target.value)} />
+            <Textarea className="min-h-48 bg-green-50" value={mode === "summary" ? summaryOutput : characterOutput} onChange={(e) => mode === "summary" ? setSummaryOutput(e.target.value) : setCharacterOutput(e.target.value)} />
           </CardContent>
         </Card>
         <Card className="my-4">
