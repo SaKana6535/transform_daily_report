@@ -27,32 +27,34 @@ export default function Home() {
           </CardContent>
         </Card>
         <div className="flex gap-3 my-4">
-          <RadioGroup
-            className="flex items-center gap-4"
-            value={mode}
-            onValueChange={(value) => setMode(value as "summary" | "character")}
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem id="mode-summary" value="summary" />
-              <label htmlFor="mode-summary">要約🤖</label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem id="mode-character" value="character" />
-              <label htmlFor="mode-character">語尾変換🥸</label>
-            </div>
-          </RadioGroup>
+          <div className="flex gap-3 flex-1">
+            <RadioGroup
+              className="flex items-center gap-4"
+              value={mode}
+              onValueChange={(value) => setMode(value as "summary" | "character")}
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem id="mode-summary" value="summary" />
+                <label htmlFor="mode-summary">要約🤖</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem id="mode-character" value="character" />
+                <label htmlFor="mode-character">語尾変換🥸</label>
+              </div>
+            </RadioGroup>
 
-          {mode === "character" && (
-            <div className="flex-1 min-w-[200px]">
-              <input
-                className="w-full rounded border border-slate-500 px-3 py-2 text-sm"
-                placeholder="キャラクター（例: クレヨンしんちゃん, 関西弁, 女の子など）"
-                value={character}
-                onChange={(e) => setCharacter(e.target.value)}
-              />
-            </div>
-          )}
-
+            {mode === "character" && (
+              <div className="flex-1 min-w-[200px]">
+                <input
+                  className="w-full rounded border border-slate-500 px-3 py-2 text-sm"
+                  placeholder="キャラクター（例: クレヨンしんちゃん, 関西弁, 女の子など）"
+                  value={character}
+                  onChange={(e) => setCharacter(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+          
           <Button 
             className="bg-blue-400 text-white" 
             variant="outline" 
